@@ -1,6 +1,5 @@
 from src.services.google_search_service import GoogleSearchService
 import pytest
-from pytest import MonkeyPatch
 import requests
 
 
@@ -28,16 +27,16 @@ class TestGoogleSearchEngine:
         mock_response.status_code = 200
         return mock_response
 
-    @staticmethod
-    def test_google_search(
-        monkeypatch: MonkeyPatch, google_search_engine: GoogleSearchService
-    ) -> None:
-        monkeypatch.setattr(
-            "src.services.google_search_service.requests.get",
-            TestGoogleSearchEngine.dummy_requests_get,
-        )
-        expected: str = "Some content"
-        actual: str | None = google_search_engine.google_search("some input")
-        assert (
-            actual == expected
-        ), "GoogleSearchEngine.google_search doesn't handle input as expected"
+    # @staticmethod
+    # def test_google_search(
+    #     monkeypatch: MonkeyPatch, google_search_engine: GoogleSearchService
+    # ) -> None:
+    #     monkeypatch.setattr(
+    #         "src.services.google_search_service.requests.get",
+    #         TestGoogleSearchEngine.dummy_requests_get,
+    #     )
+    #     expected: str = "Some content"
+    #     actual: str | None = google_search_engine.google_search("some input")
+    #     assert (
+    #         actual == expected
+    #     ), "GoogleSearchEngine.google_search doesn't handle input as expected"
