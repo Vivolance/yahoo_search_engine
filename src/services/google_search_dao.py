@@ -108,13 +108,16 @@ class GoogleSearchDAO:
                 ")"
             )
             # use named-params here to prevent SQL-injection attacks
-            connection.execute(insert_clause, {
-                "search_id": result.search_id,
-                "user_id": result.user_id,
-                "search_term": result.search_term,
-                "result": result.result,
-                "created_at": result.created_at
-            })
+            connection.execute(
+                insert_clause,
+                {
+                    "search_id": result.search_id,
+                    "user_id": result.user_id,
+                    "search_term": result.search_term,
+                    "result": result.result,
+                    "created_at": result.created_at,
+                },
+            )
 
     @retry(
         exceptions=SQLAlchemyError,
@@ -135,10 +138,9 @@ class GoogleSearchDAO:
                 ")"
             )
             # use named-params here to prevent SQL-injection attacks
-            connection.execute(insert_clause, {
-                "user_id": user.user_id,
-                "created_at": user.created_at
-            })
+            connection.execute(
+                insert_clause, {"user_id": user.user_id, "created_at": user.created_at}
+            )
 
     @retry(
         exceptions=SQLAlchemyError,
@@ -198,9 +200,7 @@ if __name__ == "__main__":
     dao: GoogleSearchDAO = GoogleSearchDAO()
     sample_user: User = User.create_user()
     sample_search_results: SearchResults = SearchResults.create(
-        sample_user.user_id,
-        "how to work at macdonalds",
-        "DROP TABLE users;"
+        sample_user.user_id, "how to work at macdonalds", "DROP TABLE users;"
     )
     dao.insert_user(sample_user)
     dao.insert_search(sample_search_results)
