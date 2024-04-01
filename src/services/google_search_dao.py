@@ -1,9 +1,12 @@
 from collections.abc import Sequence
 
 import toml
+from retry import retry
 from sqlalchemy import CursorResult, Row, TextClause, text
 from sqlalchemy.engine import Engine, create_engine
 from typing import Any, MutableMapping
+
+from sqlalchemy.exc import SQLAlchemyError
 
 from src.models.search_results import SearchResults
 from src.models.user import User
@@ -80,6 +83,70 @@ class GoogleSearchDAO:
             else f"postgresql://{user}:{password}@{host}:{port}/{database}"
         )
 
+    @retry(
+        exceptions=SQLAlchemyError,
+        tries=5,
+        delay=0.01,
+        jitter=(-0.01, 0.01),
+        backoff=2,
+    )
+    def insert_search(self, result: SearchResults) -> None:
+        with self._engine.begin() as connection:
+            insert_clause: TextClause = text(
+                "INSERT into search_results("
+                "   search_id, "
+                "   user_id, "
+                "   search_term, "
+                "   result, "
+                "   created_at"
+                ") values ("
+                "   :search_id,"
+                "   :user_id,"
+                "   :search_term,"
+                "   :result,"
+                "   :created_at"
+                ")"
+            )
+            # use named-params here to prevent SQL-injection attacks
+            connection.execute(insert_clause, {
+                "search_id": result.search_id,
+                "user_id": result.user_id,
+                "search_term": result.search_term,
+                "result": result.result,
+                "created_at": result.created_at
+            })
+
+    @retry(
+        exceptions=SQLAlchemyError,
+        tries=5,
+        delay=0.01,
+        jitter=(-0.01, 0.01),
+        backoff=2,
+    )
+    def insert_user(self, user: User) -> None:
+        with self._engine.begin() as connection:
+            insert_clause: TextClause = text(
+                "INSERT into users("
+                "   user_id, "
+                "   created_at"
+                ") values ("
+                "   :user_id,"
+                "   :created_at"
+                ")"
+            )
+            # use named-params here to prevent SQL-injection attacks
+            connection.execute(insert_clause, {
+                "user_id": user.user_id,
+                "created_at": user.created_at
+            })
+
+    @retry(
+        exceptions=SQLAlchemyError,
+        tries=5,
+        delay=0.01,
+        jitter=(-0.01, 0.01),
+        backoff=2,
+    )
     def fetch_all_searches(self) -> list[SearchResults]:
         with self._engine.begin() as connection:
             text_clause: TextClause = text(
@@ -96,13 +163,20 @@ class GoogleSearchDAO:
                         "user_id": curr_row[1],
                         "search_term": curr_row[2],
                         "result": curr_row[3],
-                        "created_at": curr_row[4],
+                        "created_at": curr_row[4].strftime("%Y-%m-%d %H:%M:%S"),
                     }
                 )
                 for curr_row in results
             ]
         return results_row
 
+    @retry(
+        exceptions=SQLAlchemyError,
+        tries=5,
+        delay=0.01,
+        jitter=(-0.01, 0.01),
+        backoff=2,
+    )
     def fetch_all_users(self) -> list[User]:
         with self._engine.begin() as connection:
             text_clause: TextClause = text("SELECT user_id, created_at " "FROM users")
@@ -112,7 +186,7 @@ class GoogleSearchDAO:
                 User.parse_obj(
                     {
                         "user_id": curr_row[0],
-                        "created_at": curr_row[1],
+                        "created_at": curr_row[1].strftime("%Y-%m-%d %H:%M:%S"),
                     }
                 )
                 for curr_row in results
@@ -122,6 +196,14 @@ class GoogleSearchDAO:
 
 if __name__ == "__main__":
     dao: GoogleSearchDAO = GoogleSearchDAO()
+    sample_user: User = User.create_user()
+    sample_search_results: SearchResults = SearchResults.create(
+        sample_user.user_id,
+        "how to work at macdonalds",
+        "DROP TABLE users;"
+    )
+    dao.insert_user(sample_user)
+    dao.insert_search(sample_search_results)
     search_results: list[SearchResults] = dao.fetch_all_searches()
     print(f"fetch_all_searches: {search_results}")
     users: list[User] = dao.fetch_all_users()
