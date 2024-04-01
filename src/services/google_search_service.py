@@ -4,12 +4,16 @@ from urllib.parse import quote
 import requests
 from retry import retry
 
+from src.models.search_results import SearchResults
+from src.models.user import User
+from src.services.google_search_dao import GoogleSearchDAO
 from src.utils.logging_utils import setup_logging
 
 
 class GoogleSearchService:
     def __init__(self) -> None:
         self.__logger: logging.Logger = logging.Logger(__name__)
+        self.__google_search_dao: GoogleSearchDAO = GoogleSearchDAO()
         setup_logging(self.__logger)
 
     @staticmethod
@@ -30,7 +34,7 @@ class GoogleSearchService:
         jitter=(-0.01, 0.01),
         backoff=2,
     )
-    def google_search(self, search_term: str) -> str | None:
+    def _google_search(self, user_id: str, search_term: str) -> SearchResults:
         """
         Jitter -> Prevent the thundering herd problem;
         - Imagine you have 1,000 servers all failing
@@ -71,18 +75,42 @@ class GoogleSearchService:
         except requests.exceptions.HTTPError as e:
             self.__logger.error(e)
             raise e
+
         if response.status_code == 200:
-            return response.text
+            result: str = response.text
+            search_result = SearchResults.create(
+                user_id=user_id, search_term=search_term, result=result
+            )
+            return search_result
         else:
             self.__logger.error(
                 f"Response has a non-200 status code: "
                 f"{response.status_code} for url: {url}"
             )
-            return None
+            return SearchResults.create(
+                user_id=user_id, search_term=search_term, result=None
+            )
+
+    def google_search(self, user_id: str, search_term: str) -> SearchResults:
+        """
+        Does two things:
+        - Performs the search
+        - Persist result into the database
+        """
+        try:
+            result: SearchResults = self._google_search(user_id, search_term)
+        except Exception:
+            result = SearchResults.create(
+                user_id=user_id, search_term=search_term, result=None
+            )
+        self.__google_search_dao.insert_search(result)
+        return result
 
 
 if __name__ == "__main__":
     search_term: str = "menstrual cycle"
+    dao: GoogleSearchDAO = GoogleSearchDAO()
+    user: User = dao.fetch_all_users()[0]
     service: GoogleSearchService = GoogleSearchService()
-    response: str | None = service.google_search(search_term)
+    response: SearchResults = service.google_search(user.user_id, search_term)
     print(response)
