@@ -23,15 +23,22 @@ class GoogleSearchService:
         """
         return f"https://www.google.com/search?q={quote(search_term)}"
 
-
-    @retry(exceptions=requests.exceptions.HTTPError, tries=5, delay=0.01, jitter=(-0.01, 0.01), backoff=2)
+    @retry(
+        exceptions=requests.exceptions.HTTPError,
+        tries=5,
+        delay=0.01,
+        jitter=(-0.01, 0.01),
+        backoff=2,
+    )
     def google_search(self, search_term: str) -> str | None:
         """
         Jitter -> Prevent the thundering herd problem;
         - Imagine you have 1,000 servers all failing
-        - Imagine all of them retry every 1 second at the same time to the downstream server
+        - Imagine all of them retry every 1
+        second at the same time to the downstream server
         - Your downstream server will die
-        - So to spread out the requests to the downstream server, we add a random noise to their retry intervals
+        - So to spread out the requests to the downstream server,
+        we add a random noise to their retry intervals
         - For API calls, we typically use -0.01s to 0.01s (10 ms)
 
         Exponential Backoff
@@ -67,12 +74,15 @@ class GoogleSearchService:
         if response.status_code == 200:
             return response.text
         else:
-            self.__logger.error(f"Response has a non-200 status code: {response.status_code} for url: {url}")
+            self.__logger.error(
+                f"Response has a non-200 status code: "
+                f"{response.status_code} for url: {url}"
+            )
             return None
 
 
 if __name__ == "__main__":
     search_term: str = "menstrual cycle"
     service: GoogleSearchService = GoogleSearchService()
-    response: str = service.google_search(search_term)
+    response: str | None = service.google_search(search_term)
     print(response)

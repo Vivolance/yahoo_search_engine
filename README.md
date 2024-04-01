@@ -76,10 +76,22 @@ alembic revision --autogenerate -m "Create user and search_results table"
 alembic upgrade head
 ```
 
-## Running the experimental script
+## Format code with black
 
 ```commandline
-python3 experimental_script.py
+black .
+```
+
+## Type-check project with mypy
+
+```commandline
+mypy .
+```
+
+## Lint for common errors with ruff
+
+```commandline
+ruff --fix .
 ```
 
 ## Future work
