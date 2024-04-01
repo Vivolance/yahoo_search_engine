@@ -1,10 +1,33 @@
-# Google Search Engine aPI
+# Google Search Engine API
 
 This repository houses a powerful python API service, able to make google searches on behalf of it's users
 
 It then parses the results and display the top 10 search results and their titles and links.
 
-## Python Version: 3.10
+## Python Version: 3.11 and above
+
+## Creating a Virtual Environment
+
+```commandline
+poetry shell
+```
+
+## Installing dependencies
+
+```commandline
+poetry install
+```
+
+## Upgrade dependencies on poetry
+
+Edit `pyproject.toml` to have the new version under `tool.poetry.dependencies`
+
+Create a new file with
+- `--no-update` ensures we don't update other dependencies that didn't have a change in dependencies in `pyproject.toml`
+
+```commandline
+poetry lock --no-update
+```
 
 ## Running the experimental script
 

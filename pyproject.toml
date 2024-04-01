@@ -1,0 +1,30 @@
+[tool.poetry]
+name="google_search_engine"
+description="A powerful, efficient async python backend server, which makes requests to users on their behalf, and scrape structured data from the messy HTML response"
+authors = ["Elson Chan <elsonccj@gmail.com>"]
+version = "0.1.0"
+
+# dependencies used to spin up server goes here
+[tool.poetry.dependencies]
+python = "^3.11"    # any version 3.11 to < 4
+requests = "^2.31.0"    # any version 2.31.0 to < 3.0.0
+retry = "^0.9.2"    # any version 0.9.2 to < 1.0.0
+pytest = "^7.4.4"   # any version 7.4.4 to < 8.0.0
+sqlalchemy = "^2.0.25"
+psycopg2-binary = "^2.9.9"
+alembic = "^1.12.0"
+pydantic = "^2.4.2"
+aiohttp = "^3.8.5"
+toml = "^0.10.2"
+types-toml = "^0.10.8.7"
+
+# dependencies only used during development goes here
+[tool.poetry.dev-dependencies]
+black = "^23.9.1"     # accepts any latest version
+ruff = "^0.0.292"
+mypy = "^1.5.1"
+pytest = "^7.4.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
