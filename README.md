@@ -29,6 +29,53 @@ Create a new file with
 poetry lock --no-update
 ```
 
+## Setting up PostgreSQL locally
+
+```commandline
+brew install postgresql@14
+```
+
+## Spin up Postgres locally at localhost:5432
+
+```commandline
+brew services start postgresql@14
+```
+
+## Connect to local database
+
+```commandline
+psql -d postgres
+```
+
+## Create the database for the project
+
+```sql
+CREATE DATABASE google_search_engine;
+```
+
+## Creating a new table in `alembic`
+
+In `database_management/tables.py`, define a new `sqlalchemy.Table`
+
+Ensure the table is linked to the `main_metadata: sqlalchemy.MetaData`
+- This lets alembic "register" the new table you create
+
+## Generate alembic revision upgrade / downgrade scripts
+- Alembic detects new changes in `tables.py` you make
+- For each new change it detects, it creates a revision
+
+To create a new revision after making changes
+
+```commandline
+alembic revision --autogenerate -m "Create user and search_results table"
+```
+
+## Upgrade our database
+
+```commandline
+alembic upgrade head
+```
+
 ## Running the experimental script
 
 ```commandline
