@@ -11,7 +11,7 @@ from database_management.tables import main_metadata
 
 config = context.config
 
-# Interpret the config file for Python logging.
+# Interpret the local_config file for Python logging.
 # This line sets up loggers basically.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
@@ -22,9 +22,9 @@ if config.config_file_name is not None:
 # target_metadata = mymodel.Base.metadata
 target_metadata = main_metadata
 
-# other values from the config, defined by the needs of env.py,
+# other values from the local_config, defined by the needs of env.py,
 # can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
+# my_important_option = local_config.get_main_option("my_important_option")
 # ... etc.
 
 
