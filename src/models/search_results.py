@@ -18,5 +18,5 @@ class SearchResults(BaseModel):
             user_id=user_id,
             search_term=search_term,
             result=result,
-            created_at=datetime.datetime.utcnow()
+            created_at=datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
         )
