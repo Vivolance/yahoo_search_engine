@@ -99,9 +99,8 @@ ruff --fix .
 It can be further extended to give back images, or summarize / recommend searches later
 
 ## TODOs:
-- [ ] Use poetry as a better dependency management tool over virtualenv
+- [ ] Wire up services to an async server; aiohttp
 - [ ] Write unit tests
 - [ ] Write integration tests
-- [ ] Integrate Postgres to store user statistics
 - [ ] Integrate Redis to do distributed caching
-- [ ] Use async to process requests at scale with a single server (asyncio)
+- [ ] Train and implement NLP model to parse the results into structured data (JSON) 
