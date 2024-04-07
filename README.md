@@ -76,6 +76,12 @@ Containers store the disk-level postgres data.
 docker rm $(docker ps -aq)
 ```
 
+## Delete all docker images
+
+```commandline
+docker rmi $(docker images -q)
+```
+
 ## Create the database for the project
 
 ```sql

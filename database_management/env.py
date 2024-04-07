@@ -1,12 +1,13 @@
 from logging.config import fileConfig
+from typing import Any
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-
 from alembic import context
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
+from database_management.construct_connection_string import construct_sqlalchemy_url
 from database_management.tables import main_metadata
 
 config = context.config
@@ -38,9 +39,9 @@ def run_migrations_offline() -> None:
 
     Calls to context.execute() here emit the given string to the
     script output.
-
     """
-    url = config.get_main_option("sqlalchemy.url")
+    url: str = construct_sqlalchemy_url()
+
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -58,9 +59,15 @@ def run_migrations_online() -> None:
     In this scenario we need to create an Engine
     and associate a connection with the context.
 
+    Hack: We override alembic to let us dynamically
+    construct the url used for alembic, with environment variables
+    - We had to do this, as alembic.ini doesn't
+    support constructing url from environment variables
     """
+    alembic_config: dict[str, Any] = config.get_section(config.config_ini_section, {})
+    alembic_config["sqlalchemy.url"] = construct_sqlalchemy_url()
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        alembic_config,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )

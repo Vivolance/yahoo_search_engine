@@ -28,7 +28,6 @@ services:
       DB_DATABASE: "google_search_engine"
     networks:
       - app-network
-    command: ["alembic", "upgrade", "head", "&&", "python", "main.py"]
 
 networks:
   app-network:
