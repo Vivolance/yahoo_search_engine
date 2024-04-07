@@ -22,5 +22,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the source code into the container
 COPY . /app/
 
+RUN chmod +x /app/shell.sh
+
 # Run alembic upgrade head after waiting for the PostgreSQL service to be available
-CMD ["sh", "-c", "alembic upgrade head && python main.py"]
+CMD ["./app/shell.sh"]
