@@ -16,6 +16,12 @@ If you made changes to Dockerfile, and wish to regenerate the Docker image
 docker-compose -f docker-compose.yml up --build --force-recreate
 ```
 
+## Connect to docker-hosted psql
+
+```commandline
+psql -d google_search_engine -U user -p 5432 -h 0.0.0.0
+```
+
 ## Python Version: 3.11 and above
 
 ## (Optional): Bottom steps not necessary if you are using docker above.
