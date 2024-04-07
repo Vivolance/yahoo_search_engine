@@ -67,10 +67,36 @@ brew services start postgresql@14
 psql -d postgres
 ```
 
+## Delete all containers (useful if you wish to start a docker-hosted postgres with a clean slate)
+
+Containers store the disk-level postgres data.
+- Sometimes, its useful to delete containers, to let the images regenerate it, to get a fresh DB
+
+```commandline
+docker rm $(docker ps -aq)
+```
+
 ## Create the database for the project
 
 ```sql
 CREATE DATABASE google_search_engine;
+```
+
+## Create a local user; compatible with alembic in `alembic.ini`
+
+```sql
+CREATE USER user WITH PASSWORD 'password';
+GRANT ALL PRIVILEGES ON DATABASE google_search_engine TO user;
+```
+
+## Setup the environment variables used in `alembic.ini`
+
+```commandline
+export DB_USER=user
+export DB_PASSWORD=password
+export DB_HOST=localhost
+export DB_PORT=5432
+export DB_DATABASE=google_search_engine
 ```
 
 ## Creating a new table in `alembic`

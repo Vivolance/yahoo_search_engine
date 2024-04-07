@@ -1,15 +1,6 @@
 version: '3'
 
 services:
-  google_search_engine:
-    build: .
-    ports:
-      - "8080:8080"
-    volumes:
-      - .:/app
-    depends_on:
-      - postgres_db
-
   postgres_db:
     image: postgres:14
     environment:
@@ -18,3 +9,26 @@ services:
       POSTGRES_PASSWORD: "password"
     ports:
       - "5432:5432"
+    networks:
+      - app-network
+
+  google_search_engine:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    depends_on:
+      - postgres_db
+    environment:
+      DB_USER: "user"
+      DB_PASSWORD: "password"
+      DB_HOST: "postgres_db"
+      DB_PORT: "5432"
+      DB_DATABASE: "google_search_engine"
+    networks:
+      - app-network
+    command: ["alembic", "upgrade", "head", "&&", "python", "main.py"]
+
+networks:
+  app-network:

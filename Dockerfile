@@ -22,8 +22,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the source code into the container
 COPY . /app/
 
-# Run alembic upgrade head before starting the Python application
-CMD ["alembic", "upgrade", "head"]
-
-# Start the Python application
-CMD ["python", "main.py"]
+# Run alembic upgrade head after waiting for the PostgreSQL service to be available
+CMD ["sh", "-c", "alembic upgrade head && python main.py"]

@@ -31,9 +31,9 @@ app.add_routes([web.get("/hello_world", hello_world_handle)])
 if __name__ == "__main__":
     """
     We must set the host to be 0.0.0.0, to allow the python server
-    in the docker container to accept connections outside 
+    in the docker container to accept connections outside
     of the docker container / virtual machine
-    
+
     If it is localhost, it won't accept it
     """
     web.run_app(app, host="0.0.0.0", port=8080)
