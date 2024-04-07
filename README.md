@@ -4,7 +4,21 @@ This repository houses a powerful python API service, able to make google search
 
 It then parses the results and display the top 10 search results and their titles and links.
 
+## Spin up both server + postgres@14 database with a single command:
+
+```commandline
+docker-compose -f docker-compose.yml up
+```
+
+If you made changes to Dockerfile, and wish to regenerate the Docker image
+
+```
+docker-compose -f docker-compose.yml up --build --force-recreate
+```
+
 ## Python Version: 3.11 and above
+
+## (Optional): Bottom steps not necessary if you are using docker above.
 
 ## Creating a Virtual Environment
 

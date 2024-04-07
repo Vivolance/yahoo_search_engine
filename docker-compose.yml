@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  google_search_engine:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    depends_on:
+      - postgres_db
+
+  postgres_db:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: "google_search_engine"
+      POSTGRES_USER: "user"
+      POSTGRES_PASSWORD: "password"
+    ports:
+      - "5432:5432"
