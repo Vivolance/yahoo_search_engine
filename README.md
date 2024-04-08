@@ -1,6 +1,6 @@
-# Google Search Engine API
+# Yahoo Search Engine API
 
-This repository houses a powerful python API service, able to make google searches on behalf of it's users
+This repository houses a powerful python API service, able to make yahoo searches on behalf of it's users
 
 It then parses the results and display the top 10 search results and their titles and links.
 
@@ -19,7 +19,7 @@ docker-compose -f docker-compose.yml up --build --force-recreate
 ## Connect to docker-hosted psql
 
 ```commandline
-psql -d google_search_engine -U user -p 5432 -h 0.0.0.0
+psql -d yahoo_search_engine -U user -p 5432 -h 0.0.0.0
 ```
 
 ## Python Version: 3.11 and above
@@ -85,14 +85,14 @@ docker rmi $(docker images -q)
 ## Create the database for the project
 
 ```sql
-CREATE DATABASE google_search_engine;
+CREATE DATABASE yahoo_search_engine;
 ```
 
 ## Create a local user; compatible with alembic in `alembic.ini`
 
 ```sql
 CREATE USER user WITH PASSWORD 'password';
-GRANT ALL PRIVILEGES ON DATABASE google_search_engine TO user;
+GRANT ALL PRIVILEGES ON DATABASE yahoo_search_engine TO user;
 ```
 
 ## Setup the environment variables used in `alembic.ini`
@@ -102,7 +102,7 @@ export DB_USER=user
 export DB_PASSWORD=password
 export DB_HOST=localhost
 export DB_PORT=5432
-export DB_DATABASE=google_search_engine
+export DB_DATABASE=yahoo_search_engine
 ```
 
 ## Creating a new table in `alembic`

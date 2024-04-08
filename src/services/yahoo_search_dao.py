@@ -12,7 +12,7 @@ from src.models.search_results import SearchResults
 from src.models.user import User
 
 
-class GoogleSearchDAO:
+class YahooSearchDAO:
     """
     In GoogleSearchService, we query the search term against Google's Service
     - However, we can have situations where different users give us the same query
@@ -77,6 +77,7 @@ class GoogleSearchDAO:
         password: str | None = db_config.get("password", None)
         database: str | None = db_config.get("database", None)
         port: str | None = db_config["port"]
+        # returns a connection string that postgres recognises to talk to postgres
         return (
             f"postgresql://{host}:{port}/{database}"
             if not user and not password
@@ -197,7 +198,7 @@ class GoogleSearchDAO:
 
 
 if __name__ == "__main__":
-    dao: GoogleSearchDAO = GoogleSearchDAO()
+    dao: YahooSearchDAO = YahooSearchDAO()
     sample_user: User = User.create_user()
     sample_search_results: SearchResults = SearchResults.create(
         sample_user.user_id, "how to work at macdonalds", "DROP TABLE users;"

@@ -1,19 +1,19 @@
 import logging
 from urllib.parse import quote
-
+import aiohttp
 import requests
 from retry import retry
-
 from src.models.search_results import SearchResults
 from src.models.user import User
-from src.services.google_search_dao import GoogleSearchDAO
+from src.services.yahoo_search_dao import YahooSearchDAO
 from src.utils.logging_utils import setup_logging
+import asyncio
 
 
-class GoogleSearchService:
+class YahooSearchService:
     def __init__(self) -> None:
         self.__logger: logging.Logger = logging.Logger(__name__)
-        self.__google_search_dao: GoogleSearchDAO = GoogleSearchDAO()
+        self.__yahoo_search_dao: YahooSearchDAO = YahooSearchDAO()
         setup_logging(self.__logger)
 
     @staticmethod
@@ -25,7 +25,7 @@ class GoogleSearchService:
         :param search_term:
         :return:
         """
-        return f"https://www.google.com/search?q={quote(search_term)}"
+        return f"https://sg.search.yahoo.com/search?q={quote(search_term)}"
 
     @retry(
         exceptions=requests.exceptions.HTTPError,
@@ -34,7 +34,7 @@ class GoogleSearchService:
         jitter=(-0.01, 0.01),
         backoff=2,
     )
-    def _google_search(self, user_id: str, search_term: str) -> SearchResults:
+    async def _search(self, user_id: str, search_term: str) -> SearchResults:
         """
         Jitter -> Prevent the thundering herd problem;
         - Imagine you have 1,000 servers all failing
@@ -63,54 +63,75 @@ class GoogleSearchService:
         - 200 (success)
         - 500 (server error, the google search engine fucked up)
         """
-        self.__logger.error(f"Started google_search for {search_term}")
+        self.__logger.info(f"Started google_search for {search_term}")
         try:
             """
             catch the request get
             you can commonly get intermittent wifi errors
             when we do, we get a HTTPError
             """
-            url: str = GoogleSearchService.create_url(search_term)
-            response: requests.Response = requests.get(url)
-        except requests.exceptions.HTTPError as e:
+            url: str = YahooSearchService.create_url(search_term)
+            async with aiohttp.ClientSession() as client:
+                async with client.get(url, ssl=False) as response:
+                    if response.status == 200:
+                        # result is the html
+                        result: str = await response.text()
+                        search_result = SearchResults.create(
+                            user_id=user_id, search_term=search_term, result=result
+                        )
+                        return search_result
+                    else:
+                        self.__logger.error(
+                            f"Response has a non-200 status code: "
+                            f"{response.status} for url: {url}"
+                        )
+                        return SearchResults.create(
+                            user_id=user_id, search_term=search_term, result=None
+                        )
+        except aiohttp.ClientError as e:
+            """
+            Simplification: assume that all aiohttp.ClientError is retriable
+            """
             self.__logger.error(e)
             raise e
 
-        if response.status_code == 200:
-            result: str = response.text
-            search_result = SearchResults.create(
-                user_id=user_id, search_term=search_term, result=result
-            )
-            return search_result
-        else:
-            self.__logger.error(
-                f"Response has a non-200 status code: "
-                f"{response.status_code} for url: {url}"
-            )
-            return SearchResults.create(
-                user_id=user_id, search_term=search_term, result=None
-            )
-
-    def google_search(self, user_id: str, search_term: str) -> SearchResults:
+    async def yahoo_search(self, user_id: str, search_term: str) -> SearchResults:
         """
         Does two things:
         - Performs the search
         - Persist result into the database
         """
         try:
-            result: SearchResults = self._google_search(user_id, search_term)
-        except Exception:
+            result: SearchResults = await self._search(user_id, search_term)
+        except Exception as e:
+            self.__logger.error(f"Ran in error {e}")
             result = SearchResults.create(
                 user_id=user_id, search_term=search_term, result=None
             )
-        self.__google_search_dao.insert_search(result)
+        self.__yahoo_search_dao.insert_search(result)
         return result
 
 
 if __name__ == "__main__":
     search_term: str = "menstrual cycle"
-    dao: GoogleSearchDAO = GoogleSearchDAO()
-    user: User = dao.fetch_all_users()[0]
-    service: GoogleSearchService = GoogleSearchService()
-    response: SearchResults = service.google_search(user.user_id, search_term)
+    dao: YahooSearchDAO = YahooSearchDAO()
+    dummy_user: User = User.create_user()
+    dao.insert_user(dummy_user)
+    user: User = dummy_user  # dao.fetch_all_users()[0]
+    service: YahooSearchService = YahooSearchService()
+    """
+    Simplest way to run an async function
+    - asyncio.run creates an event loop
+    - runs the function
+    - brings it down
+    
+    Pro:
+    - Easy to run, you dont have to explicitly create the event loop
+    
+    Con
+    - the event loop it creates is not re-usable, only available for itself
+    """
+    response: SearchResults = asyncio.run(
+        service.yahoo_search(user.user_id, search_term)
+    )
     print(response)

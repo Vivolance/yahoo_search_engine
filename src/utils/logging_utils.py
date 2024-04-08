@@ -4,7 +4,7 @@ import logging
 def setup_logging(
     logger: logging.Logger,
     log_to_file: bool = False,
-    file_path: str = "google_search.logs",
+    file_path: str = "yahoo_search.logs",
 ) -> None:
     """
     Sets up a logger to

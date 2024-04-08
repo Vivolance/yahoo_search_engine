@@ -1,6 +1,6 @@
 [database]
-    user = ""
-    password = ""
+    user = "user"
+    password = "password"
     host = "localhost"
     port = 5432
-    database = "google_search_engine"
+    database = "yahoo_search_engine"

@@ -1,5 +1,5 @@
 [tool.poetry]
-name="google_search_engine"
+name="yahoo_search_engine"
 description="A powerful, efficient async python backend server, which makes requests to users on their behalf, and scrape structured data from the messy HTML response"
 authors = ["Elson Chan <elsonccj@gmail.com>"]
 version = "0.1.0"

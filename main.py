@@ -23,7 +23,7 @@ async def hello_world_handle(request: web.Request) -> web.Response:
     return web.Response(text="Hello World")
 
 
-"""
+"""   
 Defines the routes the users can hit
 """
 app.add_routes([web.get("/hello_world", hello_world_handle)])
