@@ -8,7 +8,10 @@ class TestYahooSearchEngine:
     @pytest.mark.parametrize(
         ["input", "expected"],
         [
-            ["menstrual cycle", "https://sg.search.yahoo.com/search?q=menstrual%20cycle"],
+            [
+                "menstrual cycle",
+                "https://sg.search.yahoo.com/search?q=menstrual%20cycle",
+            ],
             ["elson chan", "https://sg.search.yahoo.com/search?q=elson%20chan"],
         ],
     )

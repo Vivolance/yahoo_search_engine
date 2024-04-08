@@ -4,7 +4,7 @@ services:
   postgres_db:
     image: postgres:14
     environment:
-      POSTGRES_DB: "google_search_engine"
+      POSTGRES_DB: "yahoo_search_engine"
       POSTGRES_USER: "user"
       POSTGRES_PASSWORD: "password"
     ports:
@@ -12,7 +12,7 @@ services:
     networks:
       - app-network
 
-  google_search_engine:
+  yahoo_search_engine:
     build: .
     ports:
       - "8080:8080"
@@ -25,7 +25,7 @@ services:
       DB_PASSWORD: "password"
       DB_HOST: "postgres_db"
       DB_PORT: "5432"
-      DB_DATABASE: "google_search_engine"
+      DB_DATABASE: "yahoo_search_engine"
     networks:
       - app-network
 

@@ -1,12 +1,13 @@
+import asyncio
 from collections.abc import Sequence
 
 import toml
 from retry import retry
 from sqlalchemy import CursorResult, Row, TextClause, text
-from sqlalchemy.engine import Engine, create_engine
 from typing import Any, MutableMapping
 
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
 from src.models.search_results import SearchResults
 from src.models.user import User
@@ -14,7 +15,7 @@ from src.models.user import User
 
 class YahooSearchDAO:
     """
-    In GoogleSearchService, we query the search term against Google's Service
+    In YahooSearchService, we query the search term against Yahoo's Service
     - However, we can have situations where different users give us the same query
 
     Use Case 1: Caching Queries, within 1 hour
@@ -58,17 +59,19 @@ class YahooSearchDAO:
     1. Query DB by search_term,
     date_inserted >= datetime.utcnow() - timedelta(hours=1)
 
-    2. Cache the query into google_searches table
+    2. Cache the query into yahoo_searches table
     uery DB by search_term,
     date_inserted >= datetime.utcnow() - timedelta(hours=1)
 
-    2. Cache the query into google_searches table
+    2. Cache the query into search_results table
     """
 
     def __init__(self):
         self.__config: MutableMapping[str, Any] = toml.load("local_config/config.toml")
         self.__db_config: dict[str, Any] = self.__config["database"]
-        self._engine: Engine = create_engine(self.connection_string(self.__db_config))
+        self._engine: AsyncEngine = create_async_engine(
+            self.connection_string(self.__db_config)
+        )
 
     @staticmethod
     def connection_string(db_config: dict[str, Any]) -> str:
@@ -79,9 +82,9 @@ class YahooSearchDAO:
         port: str | None = db_config["port"]
         # returns a connection string that postgres recognises to talk to postgres
         return (
-            f"postgresql://{host}:{port}/{database}"
+            f"postgresql+asyncpg://{host}:{port}/{database}"
             if not user and not password
-            else f"postgresql://{user}:{password}@{host}:{port}/{database}"
+            else f"postgresql+asyncpg://{user}:{password}@{host}:{port}/{database}"
         )
 
     @retry(
@@ -91,8 +94,8 @@ class YahooSearchDAO:
         jitter=(-0.01, 0.01),
         backoff=2,
     )
-    def insert_search(self, result: SearchResults) -> None:
-        with self._engine.begin() as connection:
+    async def insert_search(self, result: SearchResults) -> None:
+        async with self._engine.begin() as connection:
             insert_clause: TextClause = text(
                 "INSERT into search_results("
                 "   search_id, "
@@ -109,7 +112,7 @@ class YahooSearchDAO:
                 ")"
             )
             # use named-params here to prevent SQL-injection attacks
-            connection.execute(
+            await connection.execute(
                 insert_clause,
                 {
                     "search_id": result.search_id,
@@ -127,8 +130,8 @@ class YahooSearchDAO:
         jitter=(-0.01, 0.01),
         backoff=2,
     )
-    def insert_user(self, user: User) -> None:
-        with self._engine.begin() as connection:
+    async def insert_user(self, user: User) -> None:
+        async with self._engine.begin() as connection:
             insert_clause: TextClause = text(
                 "INSERT into users("
                 "   user_id, "
@@ -139,7 +142,7 @@ class YahooSearchDAO:
                 ")"
             )
             # use named-params here to prevent SQL-injection attacks
-            connection.execute(
+            await connection.execute(
                 insert_clause, {"user_id": user.user_id, "created_at": user.created_at}
             )
 
@@ -150,14 +153,14 @@ class YahooSearchDAO:
         jitter=(-0.01, 0.01),
         backoff=2,
     )
-    def fetch_all_searches(self) -> list[SearchResults]:
-        with self._engine.begin() as connection:
+    async def fetch_all_searches(self) -> list[SearchResults]:
+        async with self._engine.begin() as connection:
             text_clause: TextClause = text(
                 "SELECT search_id, user_id, "
                 "search_term, result, created_at "
                 "FROM search_results"
             )
-            cursor: CursorResult = connection.execute(text_clause)
+            cursor: CursorResult = await connection.execute(text_clause)
             results: Sequence[Row] = cursor.fetchall()
             results_row: list[SearchResults] = [
                 SearchResults.parse_obj(
@@ -180,10 +183,10 @@ class YahooSearchDAO:
         jitter=(-0.01, 0.01),
         backoff=2,
     )
-    def fetch_all_users(self) -> list[User]:
-        with self._engine.begin() as connection:
+    async def fetch_all_users(self) -> list[User]:
+        async with self._engine.begin() as connection:
             text_clause: TextClause = text("SELECT user_id, created_at " "FROM users")
-            cursor: CursorResult = connection.execute(text_clause)
+            cursor: CursorResult = await connection.execute(text_clause)
             results: Sequence[Row] = cursor.fetchall()
             results_row: list[User] = [
                 User.parse_obj(
@@ -201,11 +204,20 @@ if __name__ == "__main__":
     dao: YahooSearchDAO = YahooSearchDAO()
     sample_user: User = User.create_user()
     sample_search_results: SearchResults = SearchResults.create(
-        sample_user.user_id, "how to work at macdonalds", "DROP TABLE users;"
+        sample_user.user_id, "how to work at macdonalds", "Dummy Search Results"
     )
-    dao.insert_user(sample_user)
-    dao.insert_search(sample_search_results)
-    search_results: list[SearchResults] = dao.fetch_all_searches()
+
+    event_loop = asyncio.new_event_loop()
+    """
+    each line here runs asynchronously
+    We know it does, as run_until_complete is not awaited, and no Future is returned
+    a Future object represents a computation that promises to be completed in the future
+    """
+    event_loop.run_until_complete(dao.insert_user(sample_user))
+    event_loop.run_until_complete(dao.insert_search(sample_search_results))
+    search_results: list[SearchResults] = event_loop.run_until_complete(
+        dao.fetch_all_searches()
+    )
     print(f"fetch_all_searches: {search_results}")
-    users: list[User] = dao.fetch_all_users()
+    users: list[User] = event_loop.run_until_complete(dao.fetch_all_users())
     print(f"fetch_all_searches: {users}")

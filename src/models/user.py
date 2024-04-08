@@ -1,15 +1,16 @@
 import uuid
-import datetime
-from pydantic import BaseModel
+from datetime import datetime
+from pydantic import BaseModel, ConfigDict, SkipValidation
 
 
 class User(BaseModel):
     user_id: str
-    created_at: str
+    created_at: SkipValidation[datetime]
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @staticmethod
     def create_user() -> "User":
         return User(
             user_id=str(uuid.uuid4()),
-            created_at=datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
+            created_at=datetime.utcnow(),
         )
