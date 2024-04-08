@@ -146,6 +146,62 @@ mypy .
 ruff --fix .
 ```
 
+## Sample Requests
+
+### Hello World
+
+GET http://localhost:8080/hello_world
+
+#### Output
+
+```text
+Hello World
+```
+
+### Create User
+
+POST http://localhost:8080/create_user
+
+#### Output
+
+```json
+{
+	"user_id": "ace97aa8-e5e4-4fbd-b2dd-1a5fec9a2e20",
+	"created_at": "2024-04-08 15:37:31"
+}
+```
+
+![Hello World](./images/hello_world.png)
+
+### Search
+
+POST http://localhost:8080/search
+
+#### Input
+
+```json
+{
+	"user_id": "ace97aa8-e5e4-4fbd-b2dd-1a5fec9a2e20",
+	"query": "tea"
+}
+```
+
+![Create User](./images/create_user.png)
+
+#### Output
+
+```json
+{
+	"search_id": "14e197bc-ecf8-413f-a89a-23174ae938a8",
+	"user_id": "ace97aa8-e5e4-4fbd-b2dd-1a5fec9a2e20",
+	"search_term": "tea",
+	"result": "MASSIVE_HTML_HERE",
+	"created_at": "2024-04-08 15:38:03"
+}
+```
+
+![Search](./images/search.png)
+
 ## Future work
 
 It can be further extended to give back images, or summarize / recommend searches later
