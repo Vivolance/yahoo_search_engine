@@ -151,7 +151,7 @@ ruff --fix .
 It can be further extended to give back images, or summarize / recommend searches later
 
 ## TODOs:
-- [ ] Wire up services to an async server; aiohttp
+- [x] Wire up services to an async server; aiohttp
 - [ ] Write unit tests
 - [ ] Write integration tests
 - [ ] Integrate Redis to do distributed caching
