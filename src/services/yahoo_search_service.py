@@ -11,9 +11,9 @@ import asyncio
 
 
 class YahooSearchService:
-    def __init__(self) -> None:
+    def __init__(self, yahoo_search_dao: YahooSearchDAO = YahooSearchDAO()) -> None:
         self.__logger: logging.Logger = logging.Logger(__name__)
-        self.__yahoo_search_dao: YahooSearchDAO = YahooSearchDAO()
+        self.__yahoo_search_dao: YahooSearchDAO = yahoo_search_dao
         setup_logging(self.__logger)
 
     @staticmethod
@@ -108,7 +108,7 @@ class YahooSearchService:
             result = SearchResults.create(
                 user_id=user_id, search_term=search_term, result=None
             )
-        self.__yahoo_search_dao.insert_search(result)
+        await self.__yahoo_search_dao.insert_search(result)
         return result
 
 
@@ -116,7 +116,7 @@ if __name__ == "__main__":
     search_term: str = "menstrual cycle"
     dao: YahooSearchDAO = YahooSearchDAO()
     dummy_user: User = User.create_user()
-    dao.insert_user(dummy_user)
+    asyncio.run(dao.insert_user(dummy_user))
     user: User = dummy_user  # dao.fetch_all_users()[0]
     service: YahooSearchService = YahooSearchService()
     """

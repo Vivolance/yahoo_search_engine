@@ -21,7 +21,7 @@ services:
     depends_on:
       - postgres_db
     environment:
-      DB_USER: "user"
+      DB_USER: "my_user"
       DB_PASSWORD: "password"
       DB_HOST: "postgres_db"
       DB_PORT: "5432"

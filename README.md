@@ -91,14 +91,14 @@ CREATE DATABASE yahoo_search_engine;
 ## Create a local user; compatible with alembic in `alembic.ini`
 
 ```sql
-CREATE USER user WITH PASSWORD 'password';
-GRANT ALL PRIVILEGES ON DATABASE yahoo_search_engine TO user;
+CREATE USER my_user WITH PASSWORD 'password';
+GRANT ALL PRIVILEGES ON DATABASE yahoo_search_engine TO my_user;
 ```
 
 ## Setup the environment variables used in `alembic.ini`
 
 ```commandline
-export DB_USER=user
+export DB_USER=my_user
 export DB_PASSWORD=password
 export DB_HOST=localhost
 export DB_PORT=5432
