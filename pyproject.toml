@@ -23,9 +23,8 @@ types-toml = "^0.10.8.7"
 types-retry = "*"
 types-requests = "*"
 asyncpg = "^0.29.0"
+freezegun = "^1.4.0"
 
-
-# dependencies only used during development goes here
 [tool.poetry.dev-dependencies]
 black = "^23.9.1"     # accepts any latest version
 ruff = "^0.0.292"
