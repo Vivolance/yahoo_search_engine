@@ -7,7 +7,7 @@ from alembic import context
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
-from database_management.construct_connection_string import construct_sqlalchemy_url
+from src.utils.construct_connection_string import construct_sqlalchemy_url_from_env_vars
 from database_management.tables import main_metadata
 
 config = context.config
@@ -40,8 +40,7 @@ def run_migrations_offline() -> None:
     Calls to context.execute() here emit the given string to the
     script output.
     """
-    url: str = construct_sqlalchemy_url()
-
+    url: str = construct_sqlalchemy_url_from_env_vars(use_async_pg=False)
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -65,7 +64,9 @@ def run_migrations_online() -> None:
     support constructing url from environment variables
     """
     alembic_config: dict[str, Any] = config.get_section(config.config_ini_section, {})
-    alembic_config["sqlalchemy.url"] = construct_sqlalchemy_url()
+    alembic_config["sqlalchemy.url"] = construct_sqlalchemy_url_from_env_vars(
+        use_async_pg=False
+    )
     connectable = engine_from_config(
         alembic_config,
         prefix="sqlalchemy.",

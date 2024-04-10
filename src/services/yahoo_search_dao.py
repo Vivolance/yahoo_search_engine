@@ -11,6 +11,9 @@ from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
 from src.models.search_results import SearchResults
 from src.models.user import User
+from src.utils.construct_connection_string import (
+    construct_sqlalchemy_url_from_db_config,
+)
 
 
 class YahooSearchDAO:
@@ -70,21 +73,7 @@ class YahooSearchDAO:
         self.__config: MutableMapping[str, Any] = toml.load("local_config/config.toml")
         self.__db_config: dict[str, Any] = self.__config["database"]
         self._engine: AsyncEngine = create_async_engine(
-            self.connection_string(self.__db_config)
-        )
-
-    @staticmethod
-    def connection_string(db_config: dict[str, Any]) -> str:
-        host: str | None = db_config.get("host", None)
-        user: str | None = db_config.get("user", None)
-        password: str | None = db_config.get("password", None)
-        database: str | None = db_config.get("database", None)
-        port: str | None = db_config["port"]
-        # returns a connection string that postgres recognises to talk to postgres
-        return (
-            f"postgresql+asyncpg://{host}:{port}/{database}"
-            if not user and not password
-            else f"postgresql+asyncpg://{user}:{password}@{host}:{port}/{database}"
+            construct_sqlalchemy_url_from_db_config(self.__db_config, use_async_pg=True)
         )
 
     @retry(
@@ -95,6 +84,10 @@ class YahooSearchDAO:
         backoff=2,
     )
     async def insert_search(self, result: SearchResults) -> None:
+        """
+        TODO: Integration test this
+        - Retry unit test -> does it catch the SQLAlchemyError
+        """
         async with self._engine.begin() as connection:
             insert_clause: TextClause = text(
                 "INSERT into search_results("
@@ -131,6 +124,9 @@ class YahooSearchDAO:
         backoff=2,
     )
     async def insert_user(self, user: User) -> None:
+        """
+        TODO: Integration test this
+        """
         async with self._engine.begin() as connection:
             insert_clause: TextClause = text(
                 "INSERT into users("
@@ -154,6 +150,9 @@ class YahooSearchDAO:
         backoff=2,
     )
     async def fetch_all_searches(self) -> list[SearchResults]:
+        """
+        Integration test this
+        """
         async with self._engine.begin() as connection:
             text_clause: TextClause = text(
                 "SELECT search_id, user_id, "
@@ -184,6 +183,9 @@ class YahooSearchDAO:
         backoff=2,
     )
     async def fetch_all_users(self) -> list[User]:
+        """
+        Integration Test
+        """
         async with self._engine.begin() as connection:
             text_clause: TextClause = text("SELECT user_id, created_at " "FROM users")
             cursor: CursorResult = await connection.execute(text_clause)

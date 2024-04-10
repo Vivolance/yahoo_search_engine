@@ -24,6 +24,8 @@ class YahooSearchService:
         2. Concatenate the base url "https://www.google.com/search?q=" with step 1
         :param search_term:
         :return:
+
+        TODO: Unit test this
         """
         return f"https://sg.search.yahoo.com/search?q={quote(search_term)}"
 
@@ -36,6 +38,8 @@ class YahooSearchService:
     )
     async def _search(self, user_id: str, search_term: str) -> SearchResults:
         """
+        TODO: Integration test this
+
         Jitter -> Prevent the thundering herd problem;
         - Imagine you have 1,000 servers all failing
         - Imagine all of them retry every 1
@@ -100,6 +104,12 @@ class YahooSearchService:
         Does two things:
         - Performs the search
         - Persist result into the database
+
+        Unit test this
+        - This calls self._search
+        - If it raises exception, ensure it creates a dummy result
+        (SearchResults.create with results=None)
+        - insert_search is always called
         """
         try:
             result: SearchResults = await self._search(user_id, search_term)
