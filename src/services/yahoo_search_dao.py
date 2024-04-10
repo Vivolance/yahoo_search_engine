@@ -4,7 +4,7 @@ from collections.abc import Sequence
 import toml
 from retry import retry
 from sqlalchemy import CursorResult, Row, TextClause, text
-from typing import Any, MutableMapping
+from typing import Any
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
@@ -69,9 +69,11 @@ class YahooSearchDAO:
     2. Cache the query into search_results table
     """
 
-    def __init__(self):
-        self.__config: MutableMapping[str, Any] = toml.load("local_config/config.toml")
-        self.__db_config: dict[str, Any] = self.__config["database"]
+    def __init__(
+        self,
+        db_config: dict[str, Any] = toml.load("local_config/config.toml")["database"],
+    ):
+        self.__db_config: dict[str, Any] = db_config
         self._engine: AsyncEngine = create_async_engine(
             construct_sqlalchemy_url_from_db_config(self.__db_config, use_async_pg=True)
         )
@@ -168,7 +170,7 @@ class YahooSearchDAO:
                         "user_id": curr_row[1],
                         "search_term": curr_row[2],
                         "result": curr_row[3],
-                        "created_at": curr_row[4].strftime("%Y-%m-%d %H:%M:%S"),
+                        "created_at": curr_row[4],
                     }
                 )
                 for curr_row in results
@@ -194,7 +196,7 @@ class YahooSearchDAO:
                 User.parse_obj(
                     {
                         "user_id": curr_row[0],
-                        "created_at": curr_row[1].strftime("%Y-%m-%d %H:%M:%S"),
+                        "created_at": curr_row[1],
                     }
                 )
                 for curr_row in results

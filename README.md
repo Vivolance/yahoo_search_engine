@@ -208,6 +208,44 @@ POST http://localhost:8080/search
 
 ![Search](./images/search.png)
 
+## Run Unit Tests
+
+```
+pytest unit_tests
+```
+
+## Run Integration Tests
+
+### Step 1: Setup the environment variables used in `alembic.ini`
+
+```commandline
+export DB_USER=it_user
+export DB_PASSWORD=it_password
+export DB_HOST=localhost
+export DB_PORT=5432
+export DB_DATABASE=it_yahoo_search_engine
+```
+
+### Step 2: Create database + it_user
+
+```commandline
+CREATE DATABASE it_yahoo_search_engine;
+CREATE USER it_user WITH PASSWORD 'it_password';
+GRANT ALL PRIVILEGES ON DATABASE it_yahoo_search_engine TO it_user;
+```
+
+### Step 3: Use alembic to create integration test tables and database
+
+```commandline
+alembic upgrade head
+```
+
+### Step 4: Run the integration tests
+
+```commandline
+pytest -p no:asyncio --max-asyncio-tasks 1 integration_tests
+```
+
 ## Future work
 
 It can be further extended to give back images, or summarize / recommend searches later
