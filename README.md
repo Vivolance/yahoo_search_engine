@@ -252,7 +252,7 @@ It can be further extended to give back images, or summarize / recommend searche
 
 ## TODOs:
 - [x] Wire up services to an async server; aiohttp
-- [ ] Write unit tests
-- [ ] Write integration tests
+- [x] Write unit tests
+- [x] Write integration tests
 - [ ] Integrate Redis to do distributed caching
 - [ ] Train and implement NLP model to parse the results into structured data (JSON) 
