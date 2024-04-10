@@ -146,6 +146,12 @@ mypy .
 ruff --fix .
 ```
 
+## Spin up server locally on port 8080
+
+```commandline
+python src/main.py
+```
+
 ## Sample Requests
 
 ### Hello World
