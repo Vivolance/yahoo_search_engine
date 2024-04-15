@@ -1,5 +1,6 @@
 import os
 from typing import Any
+from urllib.parse import quote
 
 
 def construct_sqlalchemy_url_from_env_vars(use_async_pg: bool) -> str:
@@ -24,11 +25,13 @@ def construct_sqlalchemy_url_from_db_config(
     host: str = db_config.get("host", "")
     user: str = db_config.get("user", "")
     password: str = db_config.get("password", "")
+    encoded_user: str = quote(user)
+    encoded_password: str = quote(password)
     database: str = db_config.get("database", "")
     port: str = db_config["port"]
     return _construct_sqlalchemy_url(
-        user=user,
-        password=password,
+        user=encoded_user,
+        password=encoded_password,
         host=host,
         database=database,
         port=port,
