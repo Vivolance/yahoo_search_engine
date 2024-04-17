@@ -12,6 +12,10 @@ import asyncio
 
 class YahooSearchService:
     def __init__(self, yahoo_search_dao: YahooSearchDAO = YahooSearchDAO()) -> None:
+        """
+        We do encapsulation here by making these attributes private so that it provides a clean interface
+        for interacting with the class. It is not accessible outside the class
+        """
         self.__logger: logging.Logger = logging.Logger(__name__)
         self.__yahoo_search_dao: YahooSearchDAO = yahoo_search_dao
         setup_logging(self.__logger)
@@ -21,7 +25,7 @@ class YahooSearchService:
         """
         Given a search term e.g "menstrual cycle"
         1. Url encode it -> "menstrual+cycle"
-        2. Concatenate the base url "https://www.google.com/search?q=" with step 1
+        2. Concatenate the base url "https://sg.search.yahoo.com/search?q=" with step 1
         :param search_term:
         :return:
 
