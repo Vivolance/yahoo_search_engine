@@ -1,8 +1,19 @@
 import logging
+from logging import Logger
+
+
+"""
+!) Define a function to setup th elogger. Takes in a logger object, a boolean to log
+to file or stream, if to file a file path
+2) Set the lvel of the logger using one of the predetermined constants in the logging
+module: CRITICAL, ERROR, WARNING, INFO, DEBUG. logging.<levelname>
+3)Format the out put of the logs using logging.Formatter()
+4) If log to file use filehandler, if to console use streamhandler
+"""
 
 
 def setup_logging(
-    logger: logging.Logger,
+    logger: Logger,
     log_to_file: bool = False,
     file_path: str = "yahoo_search.logs",
 ) -> None:
@@ -41,3 +52,5 @@ def setup_logging(
         )  # this receives the logs from the logger
         console_handler.setLevel(logging.INFO)
         logger.addHandler(console_handler)
+
+
