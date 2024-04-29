@@ -25,6 +25,7 @@ types-requests = "*"
 asyncpg = "^0.29.0"
 freezegun = "^1.4.0"
 pytest-asyncio-cooperative = "^0.36.0"
+greenlet = "^3.0.3"
 
 [tool.poetry.dev-dependencies]
 black = "^23.9.1"     # accepts any latest version
