@@ -13,7 +13,8 @@ import asyncio
 class YahooSearchService:
     def __init__(self, yahoo_search_dao: YahooSearchDAO = YahooSearchDAO()) -> None:
         """
-        We do encapsulation here by making these attributes private so that it provides a clean interface
+        We do encapsulation here by making these attributes private
+        so that it provides a clean interface
         for interacting with the class. It is not accessible outside the class
         """
         self.__logger: logging.Logger = logging.Logger(__name__)

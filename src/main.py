@@ -1,11 +1,11 @@
 from typing import Any
 
 from aiohttp import web
-
 from src.models.search_results import SearchResults
 from src.models.user import User
 from src.services.yahoo_search_dao import YahooSearchDAO
 from src.services.yahoo_search_service import YahooSearchService
+from dotenv import load_dotenv
 
 """
 We are setting up an asynchronous server
@@ -20,6 +20,9 @@ to pulse check that aiohttp's server works
 We will then, build on top, to expose our GoogleSearchService class to the server
 
 """
+
+# load environment variables from .env file in root
+load_dotenv()
 app: web.Application = web.Application()
 dao: YahooSearchDAO = YahooSearchDAO()
 search_engine: YahooSearchService = YahooSearchService(yahoo_search_dao=dao)

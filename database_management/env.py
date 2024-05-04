@@ -9,6 +9,10 @@ from alembic import context
 # access to the values within the .ini file in use.
 from src.utils.construct_connection_string import construct_sqlalchemy_url_from_env_vars
 from database_management.tables import main_metadata
+from dotenv import load_dotenv
+
+# load environment variables used by alembic to connect to postgres
+load_dotenv()
 
 config = context.config
 

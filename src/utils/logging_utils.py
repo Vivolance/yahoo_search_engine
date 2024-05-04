@@ -52,5 +52,3 @@ def setup_logging(
         )  # this receives the logs from the logger
         console_handler.setLevel(logging.INFO)
         logger.addHandler(console_handler)
-
-
