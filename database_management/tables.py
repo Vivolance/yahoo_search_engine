@@ -31,9 +31,27 @@ search_results_table = Table(
         "user_id",
         String,
         ForeignKey("users.user_id", name="search_results_user_id_to_users_user_id_fk"),
-        nullable=True,
+        nullable=False,
     ),
     Column("search_term", String, nullable=False),
     Column("result", String, nullable=True),
+    Column("created_at", DateTime, nullable=False),
+)
+
+extracted_search_results_table = Table(
+    "extracted_search_results",
+    main_metadata,
+    Column("id", String, primary_key=True),
+    Column(
+        "user_id",
+        String,
+        ForeignKey(
+            "users.user_id", name="extracted_search_results_user_id_to_users_user_id_fk"
+        ),
+        nullable=False,
+    ),
+    Column("url", String, nullable=True),
+    Column("date", String, nullable=True),
+    Column("body", String, nullable=True),
     Column("created_at", DateTime, nullable=False),
 )
