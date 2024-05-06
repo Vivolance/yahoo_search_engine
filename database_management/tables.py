@@ -55,3 +55,20 @@ extracted_search_results_table = Table(
     Column("body", String, nullable=True),
     Column("created_at", DateTime, nullable=False),
 )
+
+
+# tracks the last time the ETL pipeline ran for a user
+last_extracted_user_status = Table(
+    "last_extracted_user_status",
+    main_metadata,
+    Column("id", String, primary_key=True),
+    Column(
+        "user_id",
+        String,
+        ForeignKey(
+            "users.user_id", name="last_extracted_user_to_users_user_id_fk"
+        ),
+        nullable=False,
+    ),
+    Column("last_run", DateTime, nullable=False),
+)
