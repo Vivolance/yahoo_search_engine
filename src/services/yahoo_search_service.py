@@ -80,8 +80,11 @@ class YahooSearchService:
             when we do, we get a HTTPError
             """
             url: str = YahooSearchService.create_url(search_term)
+            headers: dict[str, str] = {
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+            }
             async with aiohttp.ClientSession() as client:
-                async with client.get(url, ssl=False) as response:
+                async with client.get(url, headers=headers, ssl=False) as response:
                     if response.status == 200:
                         # result is the html
                         result: str = await response.text()
