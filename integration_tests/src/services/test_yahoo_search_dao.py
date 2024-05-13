@@ -51,6 +51,9 @@ class TestYahooSearchDAO:
             truncate_clause: TextClause = text("TRUNCATE TABLE search_results")
             await connection.execute(truncate_clause)
 
+    # Allows all your async tests to run on the same event loop
+    # Why? -> Impt for IT on database because you do not want to have 2 test
+    # to run in parallel to interfere with the same table
     @pytest.mark.asyncio_cooperative
     async def test_insert_user(self) -> None:
         await self.clear_user_table()
