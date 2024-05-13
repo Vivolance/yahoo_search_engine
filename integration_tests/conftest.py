@@ -1,7 +1,7 @@
 """
 conftest.py
 
-Contains fixture common to all tests
+Contains fixture(reusable components for your unit/integration test) common to all tests
 
 In this case, we don't have any shared fixture
 """
