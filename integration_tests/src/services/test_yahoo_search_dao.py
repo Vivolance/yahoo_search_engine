@@ -38,8 +38,8 @@ class TestYahooSearchDAO:
         Runs at the start of every integration test
         - Truncate users table
         """
+        truncate_clause: TextClause = text("TRUNCATE TABLE users CASCADE")
         async with yahoo_search_dao._engine.begin() as connection:
-            truncate_clause: TextClause = text("TRUNCATE TABLE users CASCADE")
             await connection.execute(truncate_clause)
 
     async def clear_search_table(self) -> None:
@@ -47,8 +47,8 @@ class TestYahooSearchDAO:
         Runs at the start of every integration test
         - Truncate users table
         """
+        truncate_clause: TextClause = text("TRUNCATE TABLE search_results")
         async with yahoo_search_dao._engine.begin() as connection:
-            truncate_clause: TextClause = text("TRUNCATE TABLE search_results")
             await connection.execute(truncate_clause)
 
     # Allows all your async tests to run on the same event loop
