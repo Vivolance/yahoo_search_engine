@@ -45,7 +45,7 @@ class TestYahooSearchDAO:
     async def clear_search_table(self) -> None:
         """
         Runs at the start of every integration test
-        - Truncate users table
+        - Truncate search results table
         """
         truncate_clause: TextClause = text("TRUNCATE TABLE search_results")
         async with yahoo_search_dao._engine.begin() as connection:
