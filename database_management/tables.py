@@ -10,6 +10,7 @@
 - result -> str | None (google search engine can fail)
 - created_at -> datetime (the time the search occurred)
 """
+
 from sqlalchemy import Table, MetaData, String, Column, DateTime, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -65,9 +66,7 @@ last_extracted_user_status = Table(
     Column(
         "user_id",
         String,
-        ForeignKey(
-            "users.user_id", name="last_extracted_user_to_users_user_id_fk"
-        ),
+        ForeignKey("users.user_id", name="last_extracted_user_to_users_user_id_fk"),
         nullable=False,
     ),
     Column("last_run", DateTime, nullable=False),

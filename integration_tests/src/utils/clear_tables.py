@@ -2,8 +2,8 @@ from sqlalchemy import TextClause, text
 
 from integration_tests.src.utils.engine import engine
 
-class ClearTables:
 
+class ClearTables:
     @staticmethod
     async def clear_user_table() -> None:
         """

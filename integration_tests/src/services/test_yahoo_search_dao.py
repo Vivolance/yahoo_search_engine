@@ -1,8 +1,7 @@
 from datetime import datetime
 import pytest
 
-from conftest import integration_test_db_config
-
+from integration_tests.conftest import integration_test_db_config
 from integration_tests.src.utils.clear_tables import ClearTables
 from integration_tests.src.utils.engine import dummy_uuid
 from integration_tests.src.utils.fetch import Fetch
@@ -50,6 +49,7 @@ class TestYahooSearchDAO:
             await yahoo_search_dao.insert_user(user)
 
         from integration_tests.src.utils.fetch import Fetch
+
         results_row: list[User] = await Fetch.fetch_all_users()
         assert results_row == users
         await ClearTables.clear_user_table()
