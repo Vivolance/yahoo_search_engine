@@ -1,15 +1,16 @@
 from datetime import datetime
-from uuid import UUID
 import pytest
-from sqlalchemy import TextClause, text
 
 from conftest import integration_test_db_config
+
+from integration_tests.src.utils.clear_tables import ClearTables
+from integration_tests.src.utils.engine import dummy_uuid
+from integration_tests.src.utils.fetch import Fetch
 
 from src.models.search_results import SearchResults
 from src.models.user import User
 from src.services.yahoo_search_dao import YahooSearchDAO
 
-dummy_uuid: UUID = UUID("12345678123456781234567812345678")
 # Initialize service here,
 # to reuse it across all tests here
 # We can't define this as a fixture class scope,
@@ -33,30 +34,12 @@ class TestYahooSearchDAO:
     - They should not run together; they can cause each other to fail
     """
 
-    async def clear_user_table(self) -> None:
-        """
-        Runs at the start of every integration test
-        - Truncate users table
-        """
-        truncate_clause: TextClause = text("TRUNCATE TABLE users CASCADE")
-        async with yahoo_search_dao._engine.begin() as connection:
-            await connection.execute(truncate_clause)
-
-    async def clear_search_table(self) -> None:
-        """
-        Runs at the start of every integration test
-        - Truncate search results table
-        """
-        truncate_clause: TextClause = text("TRUNCATE TABLE search_results")
-        async with yahoo_search_dao._engine.begin() as connection:
-            await connection.execute(truncate_clause)
-
     # Allows all your async tests to run on the same event loop
     # Why? -> Impt for IT on database because you do not want to have 2 test
     # to run in parallel to interfere with the same table
     @pytest.mark.asyncio_cooperative
     async def test_insert_user(self) -> None:
-        await self.clear_user_table()
+        await ClearTables.clear_user_table()
         users: list[User] = [
             User(
                 user_id=str(dummy_uuid),
@@ -65,25 +48,16 @@ class TestYahooSearchDAO:
         ]
         for user in users:
             await yahoo_search_dao.insert_user(user)
-        """
-        Over here, this integration test technically tests for two functions
-        - insert + fetch
-        - this isn't ideal, as the test should be focused on insert_user
-        
-        A better way would be to duplicate the fetch_all_users function
-        into an integration test utility folder
-        
-        However, for simplicity and since this is a mini project
-        we decided to just go with this, for simplicity
-        """
-        results_row: list[User] = await yahoo_search_dao.fetch_all_users()
+
+        from integration_tests.src.utils.fetch import Fetch
+        results_row: list[User] = await Fetch.fetch_all_users()
         assert results_row == users
-        await self.clear_user_table()
+        await ClearTables.clear_user_table()
 
     @pytest.mark.asyncio_cooperative
     async def test_insert_search(self) -> None:
-        await self.clear_search_table()
-        await self.clear_user_table()
+        await ClearTables.clear_search_table()
+        await ClearTables.clear_user_table()
         users: list[User] = [
             User(
                 user_id=str(dummy_uuid),
@@ -105,18 +79,7 @@ class TestYahooSearchDAO:
         for search_result in search_results:
             await yahoo_search_dao.insert_search(search_result)
 
-        """
-        Over here, this integration test technically tests for two functions
-        - insert + fetch
-        - this isn't ideal, as the test should be focused on insert_search
-
-        A better way would be to duplicate the fetch_all_users function
-        into an integration test utility folder
-
-        However, for simplicity and since this is a mini project
-        we decided to just go with this, for simplicity
-        """
-        results_row: list[SearchResults] = await yahoo_search_dao.fetch_all_searches()
+        results_row: list[SearchResults] = await Fetch.fetch_all_searches()
         assert results_row == search_results
-        await self.clear_search_table()
-        await self.clear_user_table()
+        await ClearTables.clear_search_table()
+        await ClearTables.clear_user_table()
