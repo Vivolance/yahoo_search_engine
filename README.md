@@ -1,4 +1,4 @@
-![image](https://github.com/Vivolance/yahoo_search_engine/assets/99338366/b1998be3-65b5-4379-bb09-6fdd0bd46171)
+![image](https://github.com/Vivolance/yahoo_search_engine/assets/99338366/b0d8a74b-19ee-4cf6-8132-016e8be9b80d)
 
 # Yahoo Search Engine API
 
