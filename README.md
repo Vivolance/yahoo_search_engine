@@ -1,3 +1,4 @@
+![image](https://github.com/Vivolance/yahoo_search_engine/assets/99338366/8f45c156-29e8-44bf-a86c-f4d0413d47d3)
 # Yahoo Search Engine API
 
 This repository houses a powerful python API service, able to make yahoo searches on behalf of it's users
