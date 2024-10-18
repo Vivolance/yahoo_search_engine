@@ -66,7 +66,7 @@ class YahooSearchDAO:
     uery DB by search_term,
     date_inserted >= datetime.utcnow() - timedelta(hours=1)
 
-    2. Cache the query into search_results table
+    3. Cache the query into search_results table
     """
 
     def __init__(
