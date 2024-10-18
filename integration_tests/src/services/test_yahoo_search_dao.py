@@ -48,8 +48,6 @@ class TestYahooSearchDAO:
         for user in users:
             await yahoo_search_dao.insert_user(user)
 
-        from integration_tests.src.utils.fetch import Fetch
-
         results_row: list[User] = await Fetch.fetch_all_users()
         assert results_row == users
         await ClearTables.clear_user_table()
