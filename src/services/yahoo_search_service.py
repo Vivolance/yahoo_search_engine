@@ -131,7 +131,7 @@ class YahooSearchService:
 
 
 if __name__ == "__main__":
-    search_term: str = "menstrual cycle"
+    search_term: str = "Coffee"
     dao: YahooSearchDAO = YahooSearchDAO()
     dummy_user: User = User.create_user()
     asyncio.run(dao.insert_user(dummy_user))
