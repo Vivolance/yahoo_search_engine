@@ -251,11 +251,5 @@ pytest -p no:asyncio --max-asyncio-tasks 1 integration_tests
 
 ## Future work
 
-It can be further extended to give back images, or summarize / recommend searches later
-
-## TODOs:
-- [x] Wire up services to an async server; aiohttp
-- [x] Write unit tests
-- [x] Write integration tests
-- [ ] Integrate Redis to do distributed caching
-- [ ] Train and implement NLP model to parse the results into structured data (JSON) 
+- It can be further extended to give back images, or summarize / recommend searches later
+- Real Time pipeline using Kafka. Visit https://github.com/Vivolance/rt-etl-yahoo-search-engine
