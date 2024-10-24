@@ -1,5 +1,8 @@
 # Yahoo Search Engine API
 
+![image](https://github.com/Vivolance/ETL_pipeline_YSE/assets/99338366/bbd22e5f-e793-48a0-b786-bf2fc414bd3c)
+
+## Brief
 This repository houses a powerful python API service, able to make yahoo searches on behalf of it's users
 
 It then parses the results and display the top 10 search results and their titles and links.
